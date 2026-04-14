@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Regalos · Paz & Roberto</title>
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Jost',sans-serif;background:#faf7f2;color:#2a2218;min-height:100vh;}
+    .nav{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(26,21,16,.96);backdrop-filter:blur(8px);border-bottom:0.5px solid rgba(180,140,80,.2);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;font-weight:300;color:#c9a55a;text-decoration:none;}
+    .nav-links{display:flex;gap:4px;align-items:center;}
+    .nav-link{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,.5);text-decoration:none;padding:8px 12px;transition:color .2s;}
+    .nav-link:hover{color:#c9a55a;}
+
+.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.nav-hamburger span{display:block;width:22px;height:1.5px;background:#c9a55a;}
+.nav-mobile{display:none;position:fixed;top:58px;left:0;right:0;background:rgba(26,21,16,.98);border-bottom:0.5px solid rgba(180,140,80,.18);z-index:499;flex-direction:column;padding:12px 0;}
+.nav-mobile.open{display:flex;}
+.nav-mobile a{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(245,240,232,.5);text-decoration:none;padding:14px 24px;border-bottom:0.5px solid rgba(180,140,80,.08);transition:color .2s;}
+.nav-mobile a:hover{color:#c9a55a;}
+.nav-mobile a.cta{color:#c9a55a;}
+@media(max-width:640px){.nav-links{display:none !important;}.nav-hamburger{display:flex;}}
+
+.nav-cart{position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:0.5px solid rgba(180,140,80,.25);border-radius:2px;cursor:pointer;text-decoration:none;transition:border-color .2s;}
+.nav-cart:hover{border-color:#c9a55a;}
+.nav-cart-count{position:absolute;top:-6px;right:-6px;background:#c9a55a;color:#1a1510;width:16px;height:16px;border-radius:50%;font-family:'Jost',sans-serif;font-size:9px;font-weight:500;display:flex;align-items:center;justify-content:center;}
+
+    .nav-link.active{color:#c9a55a;border-bottom:1px solid #c9a55a;}
+    .nav-cta{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#1a1510;background:#c9a55a;text-decoration:none;padding:9px 16px;border-radius:1px;}
+
+    .page-header{background:#1a1510;padding:100px 24px 56px;text-align:center;}
+    .ph-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#b8955a;margin-bottom:12px;}
+    .ph-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,7vw,64px);font-weight:300;font-style:italic;color:#f5f0e8;line-height:1.1;}
+    .ph-divider{width:48px;height:1px;background:#b8955a;margin:24px auto;opacity:.6;}
+    .ph-sub{font-size:14px;color:rgba(245,240,232,.55);font-weight:300;max-width:480px;margin:0 auto;line-height:1.7;}
+
+    .section{padding:60px 24px;max-width:1000px;margin:0 auto;}
+    .section-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#b8955a;text-align:center;margin-bottom:8px;}
+    .section-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;text-align:center;color:#2a2218;margin-bottom:40px;line-height:1.2;}
+
+    /* FILTERS + SORT */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:32px;}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;}
+    .filt{background:none;border:0.5px solid rgba(180,140,80,.3);color:#b8955a;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;padding:7px 16px;cursor:pointer;border-radius:1px;transition:all .2s;}
+    .filt:hover,.filt.on{background:#1a1510;border-color:#1a1510;color:#c9a55a;}
+    .sort-select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23b8955a' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:0.5px solid rgba(180,140,80,.35);color:#7a6a55;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:8px 32px 8px 14px;border-radius:1px;cursor:pointer;outline:none;}
+    .sort-select:focus{border-color:#b8955a;}
+
+    /* GRID */
+    .gifts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;}
+    .gift-card{background:#fff;border:0.5px solid rgba(180,140,80,.18);border-radius:4px;overflow:hidden;transition:transform .22s,box-shadow .22s;cursor:pointer;}
+    .gift-card:hover{transform:translateY(-5px);box-shadow:0 20px 52px rgba(42,34,24,.12);}
+    .gift-card.in-cart{border-color:rgba(180,140,80,.6);}
+    .gift-photo{position:relative;height:180px;overflow:hidden;background:#1a1510;}
+    .gift-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;filter:brightness(.88);}
+    .gift-card:hover .gift-photo img{transform:scale(1.05);}
+    .gift-photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,21,16,.55) 0%,transparent 60%);}
+    .gift-dest-badge{position:absolute;top:12px;left:12px;background:rgba(26,21,16,.72);color:#c9a55a;font-size:9px;letter-spacing:3px;text-transform:uppercase;padding:4px 10px;border-radius:1px;backdrop-filter:blur(4px);}
+    .gift-added-badge{position:absolute;top:12px;right:12px;background:#b8955a;color:#1a1510;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:1px;display:none;}
+    .gift-card.in-cart .gift-added-badge{display:block;}
+    .gift-body{padding:16px 18px 18px;}
+    .gift-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:#2a2218;margin-bottom:6px;line-height:1.2;}
+    .gift-desc-text{font-size:12px;font-weight:300;color:#9a8a75;line-height:1.65;margin-bottom:14px;}
+    .gift-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .gift-price{font-size:22px;font-family:'Cormorant Garamond',serif;color:#2a2218;line-height:1;}
+    .gift-price .currency{font-size:10px;color:#9a8a75;font-family:'Jost',sans-serif;font-weight:300;margin-left:2px;}
+    .btn-agregar{padding:8px 14px;background:#1a1510;color:#c9a55a;border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;}
+    .btn-agregar:hover{background:#2e2418;}
+    .btn-agregar.added{background:#3a2e1a;color:#7a6040;}
+
+    /* CART FAB */
+    .cart-fab{display:none !important;}
+    .cart-fab.visible{display:block;}
+    .cart-fab-btn{background:#1a1510;color:#c9a55a;border:none;border-radius:3px;padding:12px 18px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(26,21,16,.35);}
+    .cart-count{background:#b8955a;color:#1a1510;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;}
+    .cart-total-fab{font-family:'Cormorant Garamond',serif;font-size:16px;color:#f5f0e8;}
+
+    /* MODAL CARRITO */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,10,6,.9);z-index:200;align-items:flex-end;justify-content:center;}
+    @media(min-width:600px){.modal-overlay{align-items:center;}}
+    .modal-overlay.open{display:flex;}
+    .cart-modal{background:#faf7f2;border-radius:4px 4px 0 0;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .28s ease;}
+    @media(min-width:600px){.cart-modal{border-radius:4px;animation:modalIn .25s ease;}}
+    @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .cart-header{background:#1a1510;padding:22px 24px 18px;display:flex;align-items:center;justify-content:space-between;}
+    .cart-header-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:#f5f0e8;}
+    .cart-header-close{background:none;border:none;color:rgba(245,240,232,.45);font-size:1.1rem;cursor:pointer;padding:4px;}
+    .cart-header-close:hover{color:#c9a55a;}
+    .cart-items{padding:0 24px;}
+    .cart-empty{padding:40px 24px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:#b0a090;}
+    .cart-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:0.5px solid rgba(42,34,24,.1);}
+    .cart-item:last-child{border-bottom:none;}
+    .cart-item-thumb{width:52px;height:52px;border-radius:3px;object-fit:cover;flex-shrink:0;filter:brightness(.9);}
+    .cart-item-info{flex:1;min-width:0;}
+    .cart-item-dest{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b8955a;margin-bottom:2px;}
+    .cart-item-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:#2a2218;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cart-item-price{font-family:'Cormorant Garamond',serif;font-size:18px;color:#2a2218;flex-shrink:0;}
+    .cart-item-remove{background:none;border:none;color:#c0b0a0;cursor:pointer;font-size:1rem;padding:4px;flex-shrink:0;}
+    .cart-item-remove:hover{color:#9a3a2a;}
+    .cart-footer{padding:18px 24px 26px;border-top:0.5px solid rgba(42,34,24,.12);}
+    .cart-total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;}
+    .cart-total-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#7a6a55;}
+    .cart-total-amount{font-family:'Cormorant Garamond',serif;font-size:30px;color:#2a2218;}
+    .cart-total-curr{font-size:12px;font-family:'Jost',sans-serif;color:#9a8a75;font-weight:300;}
+    .pay-options-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b0a090;text-align:center;margin-bottom:12px;}
+    .pay-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .pay-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;border:0.5px solid rgba(42,34,24,.15);border-radius:3px;background:#fff;cursor:pointer;transition:all .18s;text-decoration:none;}
+    .pay-btn:hover{background:#f0ebe2;border-color:rgba(180,140,80,.4);}
+    .pay-btn-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+    .pay-btn-icon.mach{background:#0033a0;}
+    .pay-btn-icon.mp{background:#009ee3;}
+    .pay-btn-icon svg{width:20px;height:20px;}
+    .pay-btn-label{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#2a2218;text-align:center;line-height:1.4;}
+    .pay-btn.mp-btn{background:#009ee3;border-color:#009ee3;}
+    .pay-btn.mp-btn:hover{background:#007bbd;}
+    .pay-btn.mp-btn .pay-btn-label{color:#fff;}
+
+    /* MODAL MACH */
+    .mach-modal{background:#faf7f2;border-radius:4px;max-width:380px;width:100%;overflow:hidden;animation:modalIn .22s ease;}
+    .mach-header{background:#0033a0;padding:22px;text-align:center;}
+    .mach-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:#fff;margin-top:8px;}
+    .mach-body{padding:22px;}
+    .mach-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:0.5px solid rgba(42,34,24,.1);gap:12px;}
+    .mach-row:last-child{border-bottom:none;}
+    .mach-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#9a8a75;flex-shrink:0;}
+    .mach-val{font-family:'Cormorant Garamond',serif;font-size:16px;color:#2a2218;text-align:right;}
+    .mach-val.gold{color:#b8955a;font-size:22px;}
+    .mach-copy-btn{display:block;width:100%;margin-top:18px;padding:13px;background:#1a1510;color:#c9a55a;border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;text-align:center;}
+    .mach-copy-btn:hover{background:#2e2418;}
+    .mach-copy-btn.ok{background:#2a4a2a;color:#8aaa6a;}
+    .mach-note{font-size:11px;color:#b0a090;text-align:center;margin-top:10px;line-height:1.5;}
+    .mach-back{display:block;width:100%;padding:11px;background:none;border:none;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#b0a090;cursor:pointer;margin-top:4px;}
+
+    /* SORT */
+    .sort-select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23b8955a' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:0.5px solid rgba(180,140,80,.35);color:#7a6a55;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:8px 32px 8px 14px;border-radius:1px;cursor:pointer;outline:none;}
+
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2a2218;color:#c9a55a;padding:11px 28px;border-radius:2px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity .3s;z-index:400;white-space:nowrap;}
+    .toast.visible{opacity:1;}
+
+    .footer{text-align:center;padding:52px 24px 64px;background:#faf7f2;border-top:0.5px solid rgba(180,140,80,.15);}
+    .footer-names{font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;font-weight:300;color:#b8955a;margin-bottom:10px;}
+    .footer-note{font-size:13px;font-weight:300;color:#b0a090;letter-spacing:1px;}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">Paz & Roberto</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Inicio</a>
+      <a class="nav-link" href="historia.html">Nuestra historia</a>
+      <a class="nav-link" href="rsvp.html">Asistencia</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a class="nav-cart" id="nav-cart-btn" onclick="abrirCarrito()" href="javascript:void(0)" title="Ver carrito" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6h18M16 10a4 4 0 01-8 0" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="nav-cart-count" id="nav-cart-count"></span>
+      </a>
+      <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menú"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="index.html">Inicio</a>
+    <a href="historia.html">Nuestra historia</a>
+    <a href="rsvp.html">Confirmar asistencia</a>
+    <a href="regalos.html">Regalos</a>
+  </div>
+
+  <div class="page-header">
+    <div class="ph-label">regalos simbólicos</div>
+    <div class="ph-title">Nuestros sueños de viaje</div>
+    <div class="ph-divider"></div>
+    <p class="ph-sub">Elige una o varias experiencias, agrégalas al carrito y elige cómo pagar. Cualquier ayuda se agradece con todo el corazón.</p>
+  </div>
+
+  <section class="section">
+    <div class="toolbar">
+      <div class="filters">
+        <button class="filt on" data-region="all">Todas</button>
+        <button class="filt" data-region="asia">Asia</button>
+        <button class="filt" data-region="africa">África</button>
+        <button class="filt" data-region="oceania">Oceanía</button>
+        <button class="filt" data-region="america">América</button>
+        <button class="filt" data-region="europa">Europa</button>
+      </div>
+      <select class="sort-select" id="sort-select">
+        <option value="default">Orden original</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
+        <option value="precio-desc">Precio: mayor a menor</option>
+        <option value="destino-az">Destino: A → Z</option>
+        <option value="destino-za">Destino: Z → A</option>
+        <option value="agregados">Mis agregados primero</option>
+      </select>
+    </div>
+    <div class="gifts-grid" id="gifts-grid"></div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-names">Paz & Roberto</div>
+    <p class="footer-note">28 de Noviembre de 2026 · Shangri-La Lodge · San Fernando · O'Higgins</p>
+  </footer>
+
+  <!-- CART FAB -->
+  <div class="cart-fab" id="cart-fab">
+    <button class="cart-fab-btn" onclick="abrirCarrito()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6h18M16 10a4 4 0 01-8 0" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="cart-count" id="cart-count">0</span>
+      <span class="cart-total-fab" id="cart-total-fab">$0</span>
+      <span>Ver carrito</span>
+    </button>
+  </div>
+
+  <!-- MODAL CARRITO -->
+  <div class="modal-overlay" id="modal-carrito" onclick="cerrarCarritoFuera(event)">
+    <div class="cart-modal">
+      <div class="cart-header">
+        <span class="cart-header-title">Tu carrito de regalos</span>
+        <button class="cart-header-close" onclick="cerrarCarrito()">✕</button>
+      </div>
+      <div class="cart-items" id="cart-items-list"></div>
+      <div class="cart-footer" id="cart-footer" style="display:none">
+        <div class="cart-total-row">
+          <span class="cart-total-label">Total a regalar</span>
+          <span class="cart-total-amount" id="cart-total-modal">$0 <span class="cart-total-curr">CLP</span></span>
+        </div>
+
+        <!-- Datos del regalante -->
+        <div style="margin-bottom:18px;">
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b8955a;margin-bottom:7px;">Tu nombre y apellido</label>
+            <input id="regalo-nombre" type="text" placeholder="¿De parte de quién es el regalo?"
+              style="width:100%;background:#faf7f2;border:0.5px solid rgba(42,34,24,.15);color:#2a2218;font-family:'Jost',sans-serif;font-size:13px;font-weight:300;padding:10px 12px;border-radius:2px;outline:none;"/>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b8955a;margin-bottom:7px;">Tu email</label>
+            <input id="regalo-email" type="email" placeholder="Para poder contactarte si es necesario"
+              style="width:100%;background:#faf7f2;border:0.5px solid rgba(42,34,24,.15);color:#2a2218;font-family:'Jost',sans-serif;font-size:13px;font-weight:300;padding:10px 12px;border-radius:2px;outline:none;"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b8955a;margin-bottom:7px;">Mensaje para los novios (opcional)</label>
+            <textarea id="regalo-mensaje" rows="2" placeholder="Escribe algo con cariño..."
+              style="width:100%;background:#faf7f2;border:0.5px solid rgba(42,34,24,.15);color:#2a2218;font-family:'Jost',sans-serif;font-size:13px;font-weight:300;padding:10px 12px;border-radius:2px;outline:none;resize:none;"></textarea>
+          </div>
+        </div>
+
+        <p class="pay-options-label">¿Cómo quieres pagar?</p>
+        <div id="mp-monto-aviso" style="display:none;background:#fdf8f0;border:0.5px solid rgba(180,140,80,.3);border-radius:2px;padding:10px 14px;margin-bottom:12px;text-align:center;">
+          <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#b8955a;margin-bottom:4px;">Ingresa este monto en Mercado Pago</p>
+          <p id="mp-monto-valor" style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#2a2218;font-weight:400;"></p>
+        </div>
+        <div class="pay-btns">
+          <button class="pay-btn mach-btn" onclick="abrirMach()">
+            <div class="pay-btn-icon mach"><svg viewBox="0 0 24 24" fill="none"><path d="M3 20V5l9 9 9-9v15" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="pay-btn-label">Transferencia</span>
+          </button>
+          <button class="pay-btn mp-btn" id="mp-pay-btn" type="button">
+            <div class="pay-btn-icon" style="background:rgba(255,255,255,.2);border-radius:10px"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="8" stroke="#fff" stroke-width="2"/><path d="M9 12h6M14 9.5l2.5 2.5L14 14.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="pay-btn-label">Pagar con tarjeta</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MACH -->
+  <div class="modal-overlay" id="modal-mach" onclick="cerrarMachFuera(event)">
+    <div class="mach-modal">
+      <div class="mach-header">
+        <div style="display:flex;align-items:center;justify-content:center;"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M4 30V8l14 14L32 8v22" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="mach-title">Transferencia bancaria</div>
+      </div>
+      <div class="mach-body">
+        <div class="mach-row"><span class="mach-label">Nombre</span><span class="mach-val">Paz Francisca Hidalgo</span></div>
+        <div class="mach-row"><span class="mach-label">RUT</span><span class="mach-val">16.882.473-4</span></div>
+        <div class="mach-row"><span class="mach-label">Banco</span><span class="mach-val">BCI</span></div>
+        <div class="mach-row"><span class="mach-label">Tipo</span><span class="mach-val">Cuenta Corriente</span></div>
+        <div class="mach-row"><span class="mach-label">N° Cuenta</span><span class="mach-val">777916882473</span></div>
+        <div class="mach-row"><span class="mach-label">Email</span><span class="mach-val">matripazyroberto@gmail.com</span></div>
+        <div class="mach-row"><span class="mach-label">Mensaje</span><span class="mach-val" style="font-size:13px;color:#9a8a75" id="mach-msg-display"></span></div>
+        <!-- Cuadro monto destacado -->
+        <div style="margin:16px 0;background:#1a1510;border-radius:3px;padding:16px;text-align:center;">
+          <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#b8955a;margin-bottom:6px;">Monto a transferir</p>
+          <p id="mach-total-display" style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;color:#c9a55a;line-height:1;"></p>
+          <p style="font-size:9px;color:rgba(245,240,232,.3);margin-top:4px;letter-spacing:1px;">CLP</p>
+        </div>
+        <button class="mach-copy-btn" id="mach-copy-btn" onclick="copiarMach()">Copiar datos bancarios</button>
+        <p class="mach-note">Transfiere desde cualquier banco o app de pagos.<br>Copia los datos con el botón de arriba.</p>
+        <button class="mach-back" onclick="cerrarMach()">← Volver al carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const MP_LINK = 'https://link.mercadopago.cl/matripazyroberto';
+const MACH_NUM = '+56977916882';
+const fmt = n => '$' + n.toLocaleString('es-CL');
+
+const regalos = [
+  { id:0,  region:'prueba', dest:'Prueba',         nombre:'Regalo de prueba',                    desc:'Solo para testear el pago. Bórralo antes de publicar.',                                 precio:1000,   foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/960px-Heart_coraz%C3%B3n.svg.png' },
+  // ASIA
+  { id:1,  region:'asia',   dest:'China',           nombre:'Amanecer en la Gran Muralla',          desc:'Una mañana caminando uno de los lugares más épicos del planeta.',                       precio:130000, foto:'https://dynamic-media.tacdn.com/media/photo-o/2e/f0/53/71/caption.jpg?w=1100&h=800&s=1' },
+  { id:2,  region:'asia',   dest:'Filipinas',       nombre:'Isla privada en Palawan',              desc:'Un día en las aguas turquesas de uno de los archipiélagos más bonitos de Asia.',        precio:440000,  foto:'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=600&q=80' },
+  { id:3,  region:'asia',   dest:'Indonesia',       nombre:'Amanecer en el Volcán Bromo',          desc:'Levantarse antes del alba para ver el sol nacer sobre un mar de nubes y volcanes.',     precio:140000,  foto:'https://www.barcelo.com/guia-turismo/wp-content/uploads/2022/10/yakarta-monte-bromo-pal.jpg' },
+  { id:4,  region:'asia',   dest:'Japón',           nombre:'Kioto durante el otoño',      desc:'Templos, jardines cubiertos de hojas rojas y la calma de la antigua capital japonesa.', precio:95000, foto:'https://orangepassport.com/wp-content/uploads/2024/08/Kioto-en-otono.jpeg' },
+  { id:5,  region:'asia',   dest:'Nepal',           nombre:'Campo base del Everest',               desc:'Caminar hasta el pie de la montaña más alta del mundo.',                               precio:315000, foto:'https://www.halfwayanywhere.com/wp-content/uploads/2018/09/Everest-Base-Camp-Header.jpg' },
+  { id:6,  region:'asia',   dest:'Tailandia',       nombre:'Festival de luces en Chiang Mai',                 desc:'Luces al cielo, barcas sobre el agua y la magia ancestral de Chiang Mai',         precio:405000,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnl1DyZD3YDZi8CJaWOjuBMVeqXyMvIvjDuQ&s' },
+  { id:7,  region:'asia',   dest:'Jordania',        nombre:'Petra, ecos de piedra rosa',     desc:'Fachadas talladas en piedra rosa, desiertos de fuego y el eco de una civilización perdida.',        precio:40000, foto:'https://blog.grandvoyage.com/wp-content/uploads/2018/12/petra-grandvoyage-01.jpg' },
+  { id:8,  region:'asia',   dest:'Vietnam',         nombre:'Sapa, escaleras al cielo',       desc:'Montañas vestidas de seda verde, valles nublados y el encanto auténtico de las aldeas del norte.',      precio:30000,  foto:'https://vietasiatravel.com/uploads/VietNam/Anh-tour-720x480/Sapa-9.jpg' },
+  { id:10, region:'asia',   dest:'Maldivas',        nombre:'Cabaña sobre el agua',                 desc:'Despertar sobre el Índico turquesa en una overwater bungalow.',                         precio:50000, foto:'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80' },
+  // AFRICA
+  { id:11, region:'africa', dest:'Marruecos',       nombre:'Noche en el desierto del Sahara',      desc:'Dormir bajo las estrellas en una jaima en Merzouga.',                                   precio:245000, foto:'https://www.turismodeestrellas.com/m/p/770x410/media/files/2382_1a13403d-4bb0-4759-8607-7905a13a3ff4.jpeg' },
+  { id:12, region:'africa', dest:'Sudáfrica',       nombre:'Safari en el Kruger',                  desc:'Ver los big five en uno de los parques más legendarios de África.',                      precio:295000, foto:'https://www.krugerpark.co.za/images/kurt-safaris-rhino-786x416.jpg' },
+  { id:13, region:'africa', dest:'Tanzania',        nombre:'Serengeti y la gran migración',        desc:'Millones de ñus cruzando la sabana en el espectáculo natural más impresionante.',       precio:100000, foto:'https://africangorillatour.com/wp-content/uploads/2024/03/La-gran-migracion-de-nus-del-Serengeti.jpg' },
+  { id:14, region:'africa', dest:'Kenia',           nombre:'Globo sobre el Masái Mara',            desc:'Flotar al amanecer sobre la sabana africana en globo aerostático.',                     precio:435000, foto:'https://www.civitatis.com/f/kenia/masai-mara/paseo-globo-masai-mara-589x392.jpg' },
+  { id:15, region:'africa', dest:'Egipto',          nombre:'Crucero por el Nilo',                  desc:'Navegar el río más mítico del mundo entre templos faraónicos y desierto eterno.',       precio:270000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSB3s5GpBNCzsL8b8f65_sMsfnTk2Uq1PywAQ&s' },
+  { id:16, region:'africa', dest:'Zanzibar',        nombre:'Playas de Stone Town',                 desc:'Arenas blancas, aguas turquesas y la historia árabe de la isla de las especias.',       precio:450000, foto:'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=600&q=80' },
+  { id:17, region:'africa', dest:'Etiopía',         nombre:'Tribus del Valle del Omo',             desc:'Una de las experiencias culturales más únicas e intactas del planeta.',                  precio:355000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT61mJjiLZkXp2LoTV4hu-ZTfvnSBNPelpM9A&s' },
+  { id:18, region:'africa', dest:'Madagascar',      nombre:'Avenida de los Baobabs',               desc:'Un atardecer entre los árboles más antiguos y surrealistas del mundo.',                 precio:75000, foto:'https://www.lavanguardia.com/files/og_thumbnail/files/fp/uploads/2019/10/07/5fa53405bf595.r_d.333-213-18293.jpeg' },
+  { id:19, region:'africa', dest:'Namibia',         nombre:'Dunas del desierto del Namib',         desc:'Las dunas más altas del mundo teñidas de rojo y naranja al atardecer.',                 precio:350000, foto:'https://content-viajes.nationalgeographic.com.es/medio/2024/08/30/namib_3b97ac3d_240830115538_1200x675.jpg' },
+  { id:20, region:'africa', dest:'Ruanda',          nombre:'Gorilas de montaña',                   desc:'Una de las experiencias más únicas y profundas que puede vivir un ser humano.',          precio:310000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFdY84S9xZfvRc8DWPdKO50pZME8scHvfsQA&s' },
+  // OCEANIA
+  { id:21, region:'oceania',dest:'Australia',       nombre:'Gran Barrera de Coral',                desc:'Buceo y snorkel en el sistema de arrecifes más grande del mundo.',                       precio:170000, foto:'https://fotografias-compromiso.atresmedia.com/clipping/cmsimages02/2016/05/11/FD4F2F84-4F93-4817-91D3-CFF643425E1A/58.jpg' },
+  { id:22, region:'oceania',dest:'Nueva Zelanda',   nombre:'Trekking en Milford Sound',            desc:'Un día de caminata por uno de los fiordos más espectaculares del planeta.',              precio:465000,  foto:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80' },
+  { id:23, region:'oceania',dest:'Palau',           nombre:'Lago de las Medusas',                  desc:'Nadar entre millones de medusas inofensivas en un lago volcánico. Único en el mundo.',  precio:175000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrhobGOHmWbEElezrPhHkd9DdeBzzX8TGZww&s' },
+  { id:24, region:'oceania',dest:'Vanuatu',         nombre:'Volcán Yasur al atardecer',            desc:'Pararte al borde de un volcán activo y ver la lava de cerca. Adrenalina pura.',         precio:260000, foto:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80' },
+  { id:25, region:'asia',   dest:'Sri Lanka',       nombre:'Tren entre plantaciones de té',        desc:'El viaje en tren más pintoresco del mundo, entre colinas verdes y neblina.',            precio:200000,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR77-DViUyWErcZu6d3z3Nea3oP5mLe8i7AQ&s' },
+  { id:27, region:'oceania',dest:'Islas Cook',      nombre:'Laguna de Aitutaki',                   desc:'Reconocida como la laguna más bella del mundo. Agua de cristal absoluto.',               precio:85000, foto:'https://travelface.es/wp-content/uploads/2020/01/The-Vaka-Aitutaki-Cook-Islands-Photo-Credit-David-Kirkland.jpg' },
+  // AMERICA
+  { id:28, region:'america',dest:'Patagonia',       nombre:'Circuito O Torres del Paine',        desc:'Cielos infinitos, lagunas turquesas y el silencio absoluto en la ruta más salvaje de las Torres del Paine.',                 precio:185000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTed8X8NvJBm_n5-K7fczeFDCAPuqu1i5-3g&s' },
+  { id:29, region:'america',dest:'Perú',            nombre:'Machu Picchu al amanecer',             desc:'La ciudadela inca envuelta en nubes antes de que lleguen los turistas.',                 precio:485000, foto:'https://www.boletomachupicchu.com/gutblt/wp-content/uploads/2017/07/machu-picchu-salida-sol.jpg' },
+  { id:30, region:'america',dest:'Colombia',        nombre:'Medellin, la eterna primavera',                  desc:'Aromas de café, barrios que cuentan historias y la alegría contagiosa de la cultura paisa.',                           precio:320000, foto:'https://cdnwordpresstest-f0ekdgevcngegudb.z01.azurefd.net/es/wp-content/uploads/2021/11/vista-de-la-comuna-13-en-medellin.jpg' },
+  { id:31, region:'america',dest:'México',          nombre:'Cenotes de Yucatán',                   desc:'Nadar en las piscinas naturales más hermosas de América.',                               precio:110000,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS1GfMbySHAPjzIn6-N-7y1wGtQDRCJ588OQ&s' },
+  { id:32, region:'america',dest:'Costa Rica',      nombre:'Selva de Tortuguero',                  desc:'Lodge en medio del bosque lluvioso, rodeados de monos, tucanes y pura naturaleza.',      precio:385000,  foto:'https://imagenes.elpais.com/resizer/v2/GKQIBWX3GBAYJKPFSAESHZLGEI.jpg?auth=b95917a907c46e89383ac5b4fb1b4776c497fc94814d263796c57599f07ef4e4&width=1200' },
+  { id:33, region:'america',dest:'Bolivia',         nombre:'Salar de Uyuni: el espejo del cielo',  desc:'Caminar sobre el salar más grande del mundo cuando está cubierto de agua.',              precio:455000,  foto:'https://www.gochile.cl/fotos/thumb2/106562-10525555_981197595267185_7783138974584524459_n@2x.jpg' },
+  { id:34, region:'america',dest:'Argentina',       nombre:'Glaciar Perito Moreno',                desc:'Escuchar los crujidos del hielo azul y ver los témpanos caer al lago.',                  precio:300000,  foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Perito_Moreno_Glacier_2023.jpg/1280px-Perito_Moreno_Glacier_2023.jpg' },
+  { id:35, region:'america',dest:'Aruba',            nombre:'Eagle Beach',                    desc:'Arenas de seda blanca, aguas de un azul imposible y el abrazo eterno de los árboles más famosos del Caribe.',           precio:155000,  foto:'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/09/82/8d/60/eagle-beach.jpg?w=900&h=500&s=1' },
+  { id:36, region:'america',dest:'Brasil',          nombre:'Fernando de Noronha',         desc:'Playas salvajes, puestas de sol sobre el Morro do Pico y la paz absoluta en el archipiélago más exclusivo del Brasil.',                                       precio:220000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz6MmMbYWYLTPklgIC2Tu3c8wmWpyBh6GsfQ&s' },
+  { id:37, region:'america',dest:'Ecuador',         nombre:'Islas Galápagos',                      desc:'El lugar donde Darwin lo entendió todo. Fauna única, sin miedo al ser humano.',          precio:65000, foto:'https://ecommerceapi.assistcard.com/Api/ImagesHandler/GetImage?freeImageCode=galapa3' },
+  // EUROPA
+  { id:38, region:'europa', dest:'Grecia',          nombre:'Atardecer en Santorini',               desc:'Las cúpulas azules, el vino local y el sol hundiéndose en el Egeo.',                    precio:460000, foto:'https://dynamic-media.tacdn.com/media/photo-o/2e/e6/dd/d8/caption.jpg?w=1100&h=800&s=1' },
+  { id:39, region:'europa', dest:'Croacia',         nombre:'Navegando las islas dálmatas',         desc:'Saltar desde el velero al Adriático más turquesa que hayas visto jamás.',                precio:490000, foto:'https://content-viajes.nationalgeographic.com.es/medio/2019/02/12/dubrovnik-croacia_9b922c30_1500x1141.jpg' },
+  { id:40, region:'europa', dest:'Islandia',        nombre:'Aurora boreal y aguas termales',       desc:'Ver las luces del norte desde una laguna geotérmica.',                                   precio:475000, foto:'https://imgcap.capturetheatlas.com/wp-content/uploads/2019/01/AURORA-PARA-DANI.jpg' },
+  { id:41, region:'europa', dest:'Turquía',         nombre:'Globo aerostático en Capadocia',       desc:'Flotar al amanecer sobre paisajes de otro planeta.',                                     precio:135000, foto:'https://images.unsplash.com/photo-1641128324972-af3212f0f6bd?w=600&q=80' },
+  { id:42, region:'europa', dest:'Escocia',         nombre:'Highlands y castillos',                desc:'Niebla, colinas verdes, whisky artesanal y las ruinas más románticas de Europa.',        precio:45000, foto:'https://www.viajesyfotografia.com/wp-content/uploads/2017/05/eilean-donan-escocia-highlands.jpg' },
+  { id:43, region:'europa', dest:'Montenegro',      nombre:'Bahía de Kotor al anochecer',          desc:'Una ciudad medieval escondida entre montañas y el mar.',                                 precio:55000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTj7aUjSXKT2L6el7FCdKX4Jjz_lNFCLMJ6PA&s' },
+  { id:44, region:'europa', dest:'Suiza',           nombre:'Tren panorámico por los Alpes',        desc:'El Glacier Express entre montañas nevadas. El tren más bello de Europa.',                precio:115000, foto:'https://content-viajes.nationalgeographic.com.es/medio/2025/11/03/shutterstock_879e339d_2393185093_251103163050_1280x720.webp' },
+  { id:45, region:'europa', dest:'República Checa', nombre:'Praga de noche',                       desc:'Caminar por el puente Carlos a medianoche, con la ciudad iluminada.',                    precio:375000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRX5eSVuqO1XSIDucoZniA1ZvP2J_p_3V6_g&s' },
+  { id:46, region:'europa', dest:'Noruega',         nombre:'Fiordo de Geiranger en kayak',         desc:'Remar entre cascadas y acantilados en uno de los paisajes más dramáticos del mundo.',    precio:205000, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN00P0cfEQB669aEEEdUg7btlMofw3j60Y4Q&s' },
+];
+
+let carrito = [];
+let filtroActual = 'all';
+let ordenActual = 'default';
+
+document.getElementById('sort-select').addEventListener('change', function() {
+  ordenActual = this.value; renderGrid();
+
+});
+document.querySelectorAll('.filt').forEach(btn => {
+  btn.addEventListener('click', function() {
+    filtroActual = this.dataset.region;
+    document.querySelectorAll('.filt').forEach(b => b.classList.remove('on'));
+    this.classList.add('on');
+    renderGrid();
+  });
+});
+
+function aplicarOrden(lista) {
+  const c = [...lista];
+  switch(ordenActual) {
+    case 'precio-asc':  return c.sort((a,b)=>a.precio-b.precio);
+    case 'precio-desc': return c.sort((a,b)=>b.precio-a.precio);
+    case 'destino-az':  return c.sort((a,b)=>a.dest.localeCompare(b.dest,'es'));
+    case 'destino-za':  return c.sort((a,b)=>b.dest.localeCompare(a.dest,'es'));
+    case 'agregados':   return c.sort((a,b)=>(carrito.includes(b.id)?1:0)-(carrito.includes(a.id)?1:0));
+    default:            return c;
+  }
+}
+
+function renderGrid() {
+  const grid = document.getElementById('gifts-grid');
+  grid.innerHTML = '';
+  const filtrada = filtroActual === 'all' ? regalos : regalos.filter(r => r.region === filtroActual || (filtroActual==='all'));
+  const lista = aplicarOrden(filtroActual === 'all' ? regalos : regalos.filter(r=>r.region===filtroActual));
+  lista.forEach(r => {
+    const en = carrito.includes(r.id);
+    const card = document.createElement('div');
+    card.className = 'gift-card'+(en?' in-cart':'');
+    card.innerHTML = `
+      <div class="gift-photo">
+        <img src="${r.foto}" alt="${r.dest}" loading="lazy"/>
+        <div class="gift-photo-overlay"></div>
+        <div class="gift-dest-badge">${r.dest}</div>
+        <div class="gift-added-badge">✓ Agregado</div>
+      </div>
+      <div class="gift-body">
+        <div class="gift-name">${r.nombre}</div>
+        <p class="gift-desc-text">${r.desc}</p>
+        <div class="gift-footer">
+          <div class="gift-price">${fmt(r.precio)} <span class="currency">CLP</span></div>
+          <button class="btn-agregar${en?' added':''}">${en?'✓ Agregado':'+ Agregar'}</button>
+        </div>
+      </div>`;
+    card.querySelector('.btn-agregar').addEventListener('click',()=>toggleCarrito(r.id));
+    grid.appendChild(card);
+  });
+}
+
+function toggleCarrito(id) {
+  const idx = carrito.indexOf(id);
+  if(idx===-1){carrito.push(id);mostrarToast('Experiencia agregada al carrito');}
+  else{carrito.splice(idx,1);}
+  actualizarFAB(); renderGrid();
+}
+function calcTotal(){return carrito.reduce((a,id)=>a+regalos.find(r=>r.id===id).precio,0);}
+function actualizarFAB(){
+  const navBtn = document.getElementById('nav-cart-btn');
+  const navCount = document.getElementById('nav-cart-count');
+  if(navBtn){
+    navBtn.style.display = 'flex'; // siempre visible
+    if(navCount){ navCount.textContent = carrito.length; navCount.style.display='flex'; }
+  }
+  document.getElementById('cart-count').textContent=carrito.length;
+  document.getElementById('cart-total-fab').textContent=fmt(calcTotal());
+  document.getElementById('cart-fab').classList.toggle('visible',carrito.length>0);
+}
+function abrirCarrito(){renderCarritoModal();document.getElementById('modal-carrito').classList.add('open');document.body.style.overflow='hidden';}
+function cerrarCarrito(){document.getElementById('modal-carrito').classList.remove('open');document.body.style.overflow='';}
+function cerrarCarritoFuera(e){if(e.target===document.getElementById('modal-carrito'))cerrarCarrito();}
+function renderCarritoModal(){
+  const lista=document.getElementById('cart-items-list');
+  const footer=document.getElementById('cart-footer');
+  if(!carrito.length){lista.innerHTML='<div class="cart-empty">Tu carrito está vacío</div>';footer.style.display='none';return;}
+  lista.innerHTML='';
+  carrito.forEach(id=>{
+    const r=regalos.find(x=>x.id===id);
+    const item=document.createElement('div');
+    item.className='cart-item';
+    item.innerHTML=`<img class="cart-item-thumb" src="${r.foto}" alt="${r.dest}"/><div class="cart-item-info"><div class="cart-item-dest">${r.dest}</div><div class="cart-item-name">${r.nombre}</div></div><div class="cart-item-price">${fmt(r.precio)}</div><button class="cart-item-remove" onclick="quitarDelCarrito(${id})">✕</button>`;
+    lista.appendChild(item);
+  });
+  document.getElementById('cart-total-modal').innerHTML=fmt(calcTotal())+' <span class="cart-total-curr">CLP</span>';
+  // Mostrar aviso monto MP
+  const aviso = document.getElementById('mp-monto-aviso');
+  const valor = document.getElementById('mp-monto-valor');
+  if(aviso && valor){ aviso.style.display='block'; valor.textContent=fmt(calcTotal())+' CLP'; }
+  footer.style.display='block';
+}
+function quitarDelCarrito(id){carrito=carrito.filter(i=>i!==id);actualizarFAB();renderGrid();renderCarritoModal();}
+function getNombre(){ return (document.getElementById('regalo-nombre')||{}).value||''; }
+function getEmail(){  return (document.getElementById('regalo-email') ||{}).value||''; }
+function getMensaje(){ return (document.getElementById('regalo-mensaje')||{}).value||''; }
+
+function abrirMach(){
+  const nombre = getNombre().trim();
+  if(!nombre){ alert('Por favor ingresa tu nombre antes de continuar.'); return; }
+  const destinos=carrito.map(id=>regalos.find(r=>r.id===id).nombre).join(', ');
+  document.getElementById('mach-total-display').textContent=fmt(calcTotal())+' CLP';
+  document.getElementById('mach-msg-display').textContent=destinos;
+  enviarRegalo('Mach', nombre, destinos);
+  document.getElementById('modal-mach').classList.add('open');
+}
+function cerrarMach(){document.getElementById('modal-mach').classList.remove('open');}
+function cerrarMachFuera(e){if(e.target===document.getElementById('modal-mach'))cerrarMach();}
+function copiarMach(){
+  const destinos=carrito.map(id=>regalos.find(r=>r.id===id).dest).join(', ');
+  const texto = `Nombre: Paz Francisca Hidalgo\nRUT: 16.882.473-4\nBanco: BCI\nCuenta Corriente: 777916882473\nEmail: matripazyroberto@gmail.com\nMonto: ${fmt(calcTotal())} CLP\nMensaje: ${destinos}`;
+  navigator.clipboard.writeText(texto).catch(()=>{});
+  const b=document.getElementById('mach-copy-btn');
+  b.textContent='¡Copiado! ✓';b.classList.add('ok');
+  setTimeout(()=>{b.textContent='Copiar datos bancarios';b.classList.remove('ok');},2800);
+}
+
+function enviarRegalo(metodo, nombre, destinos){
+  const params = new URLSearchParams({
+    tipo:    'regalo',
+    nombre:  nombre,
+    email:   getEmail().trim(),
+    metodo:  metodo,
+    regalos: destinos,
+    monto:   fmt(calcTotal()),
+    mensaje: getMensaje().trim()
+  });
+  fetch('https://script.google.com/macros/s/AKfycbwAyMart80JQYDRHivNRIXJ01d4DKDF2zDIqOG-kyZ6pE48huN_wUNnuSk2zN04Pgk5/exec?' + params.toString())
+    .catch(()=>{});
+}
+
+// Interceptar click en Mercado Pago para validar nombre y enviar datos
+// ── MERCADO PAGO CHECKOUT PRO ──────────────────────────────────────────────
+const MP_PUBLIC_KEY = 'APP_USR-7fbfa32c-c995-4aa6-a16b-d4bd47c32cd6';
+const MP_ACCESS_TOKEN = 'APP_USR-2264738859724384-041319-5e41c4153215bfbc81e15d9cabfaefaa-295125723';
+
+document.addEventListener('DOMContentLoaded', function(){
+  const mpBtn = document.getElementById('mp-pay-btn');
+  if(!mpBtn) return;
+
+  mpBtn.addEventListener('click', async function(){
+    const nombre = getNombre().trim();
+    if(!nombre){ alert('Por favor ingresa tu nombre antes de continuar.'); return; }
+    const total = calcTotal();
+    if(total === 0){ alert('Tu carrito está vacío.'); return; }
+    const destinos = carrito.map(id=>regalos.find(r=>r.id===id).nombre).join(', ');
+
+    // Loading
+    mpBtn.querySelector('.pay-btn-label').textContent = 'Preparando...';
+    mpBtn.disabled = true;
+    mpBtn.style.opacity = '0.7';
+
+    try {
+      // Crear preferencia via API de MP con el Access Token
+      const body = {
+        items: [{
+          title: 'Regalo matrimonio Paz & Roberto — ' + destinos.substring(0,50),
+          quantity: 1,
+          unit_price: total,
+          currency_id: 'CLP'
+        }],
+        payer: { name: nombre },
+        back_urls: {
+          success: 'https://matripazyroberto.github.io/matripazyroberto/',
+          failure: 'https://matripazyroberto.github.io/matripazyroberto/',
+          pending: 'https://matripazyroberto.github.io/matripazyroberto/'
+        },
+        auto_return: 'approved'
+      };
+
+      const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + MP_ACCESS_TOKEN
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await resp.json();
+
+      if(data.init_point){
+        enviarRegalo('Mercado Pago', nombre, destinos);
+        window.open(data.init_point, '_blank');
+      } else {
+        console.error('MP error:', data);
+        // Fallback al link simple
+        enviarRegalo('Mercado Pago', nombre, destinos);
+        window.open(MP_LINK, '_blank');
+      }
+    } catch(err){
+      console.error(err);
+      // Fallback al link simple
+      enviarRegalo('Mercado Pago', nombre, destinos);
+      window.open(MP_LINK, '_blank');
+    } finally {
+      mpBtn.querySelector('.pay-btn-label').textContent = 'Pagar con tarjeta';
+      mpBtn.disabled = false;
+      mpBtn.style.opacity = '';
+    }
+  });
+});
+function mostrarToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');setTimeout(()=>t.classList.remove('visible'),2200);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarCarrito();cerrarMach();}});
+renderGrid();
+// Carrito siempre visible con 0 al cargar
+(function(){
+  const nb=document.getElementById('nav-cart-btn');
+  const nc=document.getElementById('nav-cart-count');
+  if(nb) nb.style.display='flex';
+  if(nc){ nc.textContent='0'; nc.style.display='flex'; }
+})();
+</script>
+
+<script>
+function toggleMenu(){
+  document.getElementById('nav-mobile').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const mob = document.getElementById('nav-mobile');
+  if(mob && !mob.contains(e.target) && !e.target.closest('.nav-hamburger')) mob.classList.remove('open');
+});
+</script>
+</body>
+</html>
