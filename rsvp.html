@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Confirmar asistencia · Paz & Roberto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Jost',sans-serif;background:#faf7f2;color:#2a2218;min-height:100vh;}
+    .nav{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(26,21,16,.97);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(180,140,80,.18);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;font-weight:300;color:#c9a55a;text-decoration:none;}
+    .nav-links{display:flex;gap:2px;align-items:center;}
+    .nav-link{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,.45);text-decoration:none;padding:8px 10px;transition:color .2s;}
+    .nav-link:hover{color:#c9a55a;}
+    .nav-link.active{color:#c9a55a;border-bottom:1px solid #c9a55a;}
+    .nav-cta{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#1a1510;background:#c9a55a;text-decoration:none;padding:9px 16px;border-radius:1px;}
+    .nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+    .nav-hamburger span{display:block;width:22px;height:1.5px;background:#c9a55a;}
+    .nav-mobile{display:none;position:fixed;top:58px;left:0;right:0;background:rgba(26,21,16,.98);border-bottom:0.5px solid rgba(180,140,80,.18);z-index:499;flex-direction:column;padding:12px 0;}
+    .nav-mobile.open{display:flex;}
+    .nav-mobile a{font-family:'Jost',sans-serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(245,240,232,.5);text-decoration:none;padding:14px 24px;border-bottom:0.5px solid rgba(180,140,80,.08);}
+    .nav-mobile a.cta{color:#c9a55a;}
+    @media(max-width:640px){.nav-links{display:none !important;}.nav-hamburger{display:flex;}}
+
+    .page-header{background:#1a1510;padding:90px 24px 52px;text-align:center;margin-top:58px;}
+    .ph-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#b8955a;margin-bottom:14px;}
+    .ph-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,8vw,64px);font-weight:300;font-style:italic;color:#f5f0e8;line-height:1.1;}
+    .ph-divider{width:44px;height:1px;background:#b8955a;margin:22px auto;opacity:.6;}
+    .ph-sub{font-size:13px;color:rgba(245,240,232,.45);font-weight:300;letter-spacing:.5px;}
+
+    .rsvp-section{max-width:520px;margin:0 auto;padding:60px 24px 80px;}
+    .rsvp-card{background:#fff;border:0.5px solid rgba(180,140,80,.18);border-radius:4px;padding:36px 32px;}
+    @media(max-width:480px){.rsvp-card{padding:24px 18px;}}
+
+    .field{margin-bottom:20px;}
+    .field label{display:block;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b8955a;margin-bottom:8px;}
+    .field input,.field select,.field textarea{width:100%;background:#faf7f2;border:0.5px solid rgba(42,34,24,.18);color:#2a2218;font-family:'Jost',sans-serif;font-size:14px;font-weight:300;padding:11px 13px;border-radius:2px;outline:none;transition:border-color .2s;appearance:none;}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#b8955a;}
+    .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23b8955a' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-color:#faf7f2;padding-right:34px;}
+
+    .radio-group{display:flex;gap:10px;}
+    .radio-opt{flex:1;}
+    .radio-opt input{display:none;}
+    .radio-opt label{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border:0.5px solid rgba(42,34,24,.15);border-radius:2px;cursor:pointer;font-size:12px;letter-spacing:.5px;color:#7a6a55;transition:all .18s;text-align:center;}
+    .radio-opt input:checked+label{border-color:#b8955a;background:#fdf8f0;color:#2a2218;}
+
+    .persona-box{background:#faf7f2;border:0.5px solid rgba(180,140,80,.15);border-radius:3px;padding:18px 16px;margin-bottom:16px;}
+    .persona-box-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#b8955a;margin-bottom:14px;}
+
+    .divider{border:none;border-top:0.5px solid rgba(42,34,24,.1);margin:20px 0;}
+
+    .submit-btn{display:block;width:100%;margin-top:24px;padding:14px;background:#1a1510;color:#c9a55a;border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+    .submit-btn:hover{background:#2e2418;}
+
+    .hidden{display:none;}
+    .success{text-align:center;padding:32px 16px;}
+    .success-icon{font-size:40px;margin-bottom:14px;}
+    .success-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#2a2218;margin-bottom:8px;}
+    .success-text{font-size:13px;color:#7a6a55;font-weight:300;line-height:1.7;}
+
+    .footer{text-align:center;padding:40px 24px 52px;background:#1a1510;border-top:0.5px solid rgba(180,140,80,.12);}
+    .footer-names{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;font-weight:300;color:#c9a55a;margin-bottom:8px;}
+    .footer-note{font-size:10px;font-weight:300;color:rgba(245,240,232,.25);letter-spacing:2px;text-transform:uppercase;}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">Paz & Roberto</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Inicio</a>
+      <a class="nav-link" href="historia.html">Nuestra historia</a>
+      <a class="nav-link active" href="rsvp.html">Asistencia</a>
+      <a class="nav-link" href="regalos.html">Regalos</a>
+    </div>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menú"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="index.html">Inicio</a>
+    <a href="historia.html">Nuestra historia</a>
+    <a href="rsvp.html" class="cta">Asistencia</a>
+    <a href="regalos.html">Regalos</a>
+  </div>
+
+  <div class="page-header">
+    <div class="ph-label">cuéntanos</div>
+    <div class="ph-title">¿Podrás venir?</div>
+    <div class="ph-divider"></div>
+    <div class="ph-sub">Shangri-La Lodge · San Fernando · Confirma antes del 1 de octubre de 2026</div>
+  </div>
+
+  <section class="rsvp-section">
+    <div class="rsvp-card">
+      <div id="form-wrap">
+
+        <!-- ¿Asiste? -->
+        <div class="field">
+          <label>¿Podrás asistir?</label>
+          <div class="radio-group">
+            <div class="radio-opt"><input type="radio" name="asiste" id="si" value="si" onchange="toggleAsiste()"/><label for="si">🥂 Sí, allá estaré</label></div>
+            <div class="radio-opt"><input type="radio" name="asiste" id="no" value="no" onchange="toggleAsiste()"/><label for="no">😢 No podré ir</label></div>
+          </div>
+        </div>
+
+        <!-- Si NO asiste -->
+        <div id="bloque-no" class="hidden">
+          <div class="field">
+            <label>Tu nombre</label>
+            <input type="text" id="nombre-no" placeholder="Nombre completo"/>
+          </div>
+        </div>
+
+        <!-- Si SÍ asiste -->
+        <div id="bloque-si" class="hidden">
+          <!-- ¿Van solos o en pareja? -->
+          <div class="field">
+            <label>¿Vienes solo/a o en pareja?</label>
+            <div class="radio-group">
+              <div class="radio-opt"><input type="radio" name="grupo" id="solo" value="1" onchange="toggleGrupo()"/><label for="solo">Solo/a</label></div>
+              <div class="radio-opt"><input type="radio" name="grupo" id="pareja" value="2" onchange="toggleGrupo()"/><label for="pareja">En pareja</label></div>
+            </div>
+          </div>
+
+          <!-- Persona 1 -->
+          <div id="bloque-p1" class="hidden">
+            <div class="persona-box">
+              <p class="persona-box-title">Persona 1</p>
+              <div class="field" style="margin-bottom:14px;">
+                <label>Nombre completo</label>
+                <input type="text" id="nombre-p1" placeholder="Tu nombre"/>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Restricción alimentaria</label>
+                <select id="dieta-p1">
+                  <option value="ninguna">Sin restricciones</option>
+                  <option value="vegetariano">Vegetariano</option>
+                  <option value="vegano">Vegano</option>
+                  <option value="celiaco">Celíaco / sin gluten</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Persona 2 (solo si van en pareja) -->
+            <div id="bloque-p2" class="hidden">
+              <div class="persona-box">
+                <p class="persona-box-title">Persona 2</p>
+                <div class="field" style="margin-bottom:14px;">
+                  <label>Nombre completo</label>
+                  <input type="text" id="nombre-p2" placeholder="Nombre de tu acompañante"/>
+                </div>
+                <div class="field" style="margin-bottom:0;">
+                  <label>Restricción alimentaria</label>
+                  <select id="dieta-p2">
+                    <option value="ninguna">Sin restricciones</option>
+                    <option value="vegetariano">Vegetariano</option>
+                    <option value="vegano">Vegano</option>
+                    <option value="celiaco">Celíaco / sin gluten</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <button class="submit-btn" onclick="enviarRSVP()">Confirmar</button>
+      </div>
+
+      <div class="success hidden" id="success-msg">
+        <div class="success-icon" id="s-icon">🥂</div>
+        <div class="success-title" id="s-title">¡Qué alegría!</div>
+        <p class="success-text" id="s-text"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-names">Paz & Roberto</div>
+    <p class="footer-note">28 · Noviembre · 2026 · Shangri-La Lodge · San Fernando</p>
+  </footer>
+
+  <script>
+  function toggleMenu(){document.getElementById('nav-mobile').classList.toggle('open');}
+  document.addEventListener('click',e=>{const m=document.getElementById('nav-mobile');if(m&&!m.contains(e.target)&&!e.target.closest('.nav-hamburger'))m.classList.remove('open');});
+
+  function toggleAsiste(){
+    const si = document.getElementById('si').checked;
+    document.getElementById('bloque-si').classList.toggle('hidden',!si);
+    document.getElementById('bloque-no').classList.toggle('hidden',si);
+  }
+
+  function toggleGrupo(){
+    const solo = document.getElementById('solo').checked;
+    const pareja = document.getElementById('pareja').checked;
+    document.getElementById('bloque-p1').classList.toggle('hidden',!solo&&!pareja);
+    document.getElementById('bloque-p2').classList.toggle('hidden',!pareja);
+  }
+
+  function encode(data){
+    return Object.keys(data)
+      .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+      .join('&');
+  }
+
+  function enviarRSVP(){
+    const asiste = document.querySelector('input[name="asiste"]:checked');
+    if(!asiste){alert('Por favor indica si podrás asistir.');return;}
+
+    let datos = { 'form-name': 'rsvp-matrimonio' };
+
+    if(asiste.value === 'no'){
+      const nombre = document.getElementById('nombre-no').value.trim() || 'Anónimo';
+      datos['asiste']    = 'No podré ir';
+      datos['nombre-p1'] = nombre;
+      datos['mensaje']   = '';
+      enviarANetlify(datos, 'no', nombre);
+      return;
+    }
+
+    const grupo = document.querySelector('input[name="grupo"]:checked');
+    if(!grupo){alert('Por favor indica si vienes solo/a o en pareja.');return;}
+    const n1 = document.getElementById('nombre-p1').value.trim();
+    if(!n1){alert('Por favor ingresa tu nombre.');return;}
+
+    datos['asiste']    = 'Sí, allá estaré';
+    datos['nombre-p1'] = n1;
+    datos['dieta-p1']  = document.getElementById('dieta-p1').value;
+    datos['mensaje']   = '';
+
+    if(grupo.value === '2'){
+      const n2 = document.getElementById('nombre-p2').value.trim();
+      if(!n2){alert('Por favor ingresa el nombre de tu acompañante.');return;}
+      datos['nombre-p2'] = n2;
+      datos['dieta-p2']  = document.getElementById('dieta-p2').value;
+    }
+
+    enviarANetlify(datos, 'si', n1);
+  }
+
+  function enviarANetlify(datos, tipo, nombre){
+    var params = new URLSearchParams();
+    params.append('asiste',    datos['asiste']    || '');
+    params.append('nombre-p1', datos['nombre-p1'] || '');
+    params.append('dieta-p1',  datos['dieta-p1']  || '');
+    params.append('nombre-p2', datos['nombre-p2'] || '');
+    params.append('dieta-p2',  datos['dieta-p2']  || '');
+    params.append('mensaje',   datos['mensaje']   || '');
+
+    fetch('https://script.google.com/macros/s/AKfycbwAyMart80JQYDRHivNRIXJ01d4DKDF2zDIqOG-kyZ6pE48huN_wUNnuSk2zN04Pgk5/exec?' + params.toString())
+    .then(() => mostrarExito(tipo, nombre))
+    .catch(() => mostrarExito(tipo, nombre));
+  }
+
+  function mostrarExito(tipo, nombre){
+    document.getElementById('form-wrap').classList.add('hidden');
+    const msg = document.getElementById('success-msg');
+    msg.classList.remove('hidden');
+    if(tipo === 'no'){
+      document.getElementById('s-icon').textContent  = '🤍';
+      document.getElementById('s-title').textContent = 'Gracias por avisarnos';
+      document.getElementById('s-text').textContent  = 'Nos da pena que no puedas venir, pero te queremos igual.';
+    } else {
+      document.getElementById('s-icon').textContent  = '🥂';
+      document.getElementById('s-title').textContent = '¡Qué alegría, ' + nombre + '!';
+      document.getElementById('s-text').textContent  = '¡Los esperamos con todo el amor el 28 de noviembre en el Shangri-La Lodge!';
+    }
+  }
+  </script>
+</body>
+</html>
