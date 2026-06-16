@@ -109,10 +109,21 @@
             <label>Tu nombre</label>
             <input type="text" id="nombre-no" placeholder="Nombre completo"/>
           </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Tu email (opcional)</label>
+            <input type="email" id="email-no" placeholder="tucorreo@ejemplo.com"/>
+          </div>
         </div>
 
         <!-- Si SÍ asiste -->
         <div id="bloque-si" class="hidden">
+          <!-- Email de contacto -->
+          <div class="field">
+            <label>Tu email</label>
+            <input type="email" id="email-si" placeholder="tucorreo@ejemplo.com"/>
+            <p style="font-size:11px;color:#9a8a72;font-weight:300;margin-top:6px;">Te enviaremos la confirmación y la lista de regalos.</p>
+          </div>
+
           <!-- ¿Van solos o en pareja? -->
           <div class="field">
             <label>¿Vienes solo/a o en pareja?</label>
@@ -214,8 +225,11 @@
 
     if(asiste.value === 'no'){
       const nombre = document.getElementById('nombre-no').value.trim() || 'Anónimo';
+      const emailNo = document.getElementById('email-no').value.trim();
+      if(emailNo && !validarEmail(emailNo)){alert('Revisa el formato de tu email.');return;}
       datos['asiste']    = 'No podré ir';
       datos['nombre-p1'] = nombre;
+      datos['email']     = emailNo;
       datos['mensaje']   = '';
       enviarANetlify(datos, 'no', nombre);
       return;
@@ -225,10 +239,14 @@
     if(!grupo){alert('Por favor indica si vienes solo/a o en pareja.');return;}
     const n1 = document.getElementById('nombre-p1').value.trim();
     if(!n1){alert('Por favor ingresa tu nombre.');return;}
+    const emailSi = document.getElementById('email-si').value.trim();
+    if(!emailSi){alert('Por favor ingresa tu email para enviarte la confirmación.');return;}
+    if(!validarEmail(emailSi)){alert('Revisa el formato de tu email.');return;}
 
     datos['asiste']    = 'Sí, allá estaré';
     datos['nombre-p1'] = n1;
     datos['dieta-p1']  = document.getElementById('dieta-p1').value;
+    datos['email']     = emailSi;
     datos['mensaje']   = '';
 
     if(grupo.value === '2'){
@@ -241,6 +259,10 @@
     enviarANetlify(datos, 'si', n1);
   }
 
+  function validarEmail(e){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  }
+
   function enviarANetlify(datos, tipo, nombre){
     var params = new URLSearchParams();
     params.append('asiste',    datos['asiste']    || '');
@@ -248,6 +270,7 @@
     params.append('dieta-p1',  datos['dieta-p1']  || '');
     params.append('nombre-p2', datos['nombre-p2'] || '');
     params.append('dieta-p2',  datos['dieta-p2']  || '');
+    params.append('email',     datos['email']     || '');
     params.append('mensaje',   datos['mensaje']   || '');
 
     fetch('https://script.google.com/macros/s/AKfycbwAyMart80JQYDRHivNRIXJ01d4DKDF2zDIqOG-kyZ6pE48huN_wUNnuSk2zN04Pgk5/exec?' + params.toString())
